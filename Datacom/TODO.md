@@ -1,0 +1,4 @@
+- [x] Add uploaded profile picture to the hero avatar (replace the current inline SVG placeholder).
+- [ ] Upgrade background animation to be more eye-catching network/data-comm themed.
+- [x] Fix Turnitin PDF link so it opens correctly from Resources.
+- [ ] Add more diagrams/visuals per topic to improve explanations.

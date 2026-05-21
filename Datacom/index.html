@@ -1,0 +1,1917 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Twene Ebenezer — Data Communication Knowledge Hub</title>
+    <style>
+        :root {
+            --bg0: #070A12;
+            --bg1: #0B1220;
+            --card: #0F1A2E;
+            --text: #EAF0FF;
+            --muted: #AAB6D6;
+            --border: rgba(180, 210, 255, .16);
+            --accent: #57C6FF;
+            --accent2: #7C5CFF;
+            --good: #34D399;
+            --warn: #FBBF24;
+            --shadow: 0 18px 55px rgba(0, 0, 0, .45);
+            --ring: rgba(87, 198, 255, .35);
+
+            --packet: rgba(87, 198, 255, .95);
+            --node: rgba(124, 92, 255, .9);
+            --grid: rgba(255, 255, 255, .06);
+
+            --headerH: 70px;
+            --radius: 16px;
+        }
+
+        [data-theme="light"] {
+            --bg0: #F7FAFF;
+            --bg1: #ECF3FF;
+            --card: #FFFFFF;
+            --text: #0B1633;
+            --muted: #4B5B82;
+            --border: rgba(9, 34, 88, .14);
+            --accent: #0066FF;
+            --accent2: #6A4CFF;
+            --shadow: 0 18px 55px rgba(16, 55, 130, .18);
+            --ring: rgba(0, 102, 255, .25);
+            --packet: rgba(0, 102, 255, .95);
+            --node: rgba(106, 76, 255, .9);
+            --grid: rgba(0, 0, 0, .05);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            color: var(--text);
+            background: radial-gradient(1100px 500px at 10% -10%, rgba(124, 92, 255, .22), transparent 55%),
+                radial-gradient(900px 450px at 90% 0%, rgba(87, 198, 255, .18), transparent 60%),
+                linear-gradient(180deg, var(--bg0), var(--bg1));
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background canvas */
+        #bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 1;
+        }
+
+
+
+        /* Optional background image overlay (for eye-catchy visuals) */
+        .bg-image {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            background-image: url('./WhatsApp Image 2026-05-16 at 4.20.43 AM.jpeg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.25;
+            /* Blur the background for a softer, less transparent look */
+            filter: blur(10px) saturate(1.05) contrast(1.05);
+        }
+
+
+
+        /* Subtle grid */
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background-image:
+                linear-gradient(to right, var(--grid) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+            background-size: 44px 44px;
+            mask-image: radial-gradient(700px 340px at 50% 20%, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+            opacity: .8;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            height: var(--headerH);
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: color-mix(in srgb, var(--bg1) 82%, transparent);
+            backdrop-filter: blur(10px);
+        }
+
+        .container {
+            width: min(1120px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 220px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(87, 198, 255, .35), rgba(124, 92, 255, .35));
+            border: 1px solid var(--border);
+            box-shadow: 0 0 0 6px rgba(87, 198, 255, .08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo:before {
+            content: "";
+            position: absolute;
+            inset: -30%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .55), transparent 40%),
+                radial-gradient(circle at 70% 70%, rgba(87, 198, 255, .35), transparent 50%);
+            animation: none;
+        }
+
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-15%) rotate(0deg)
+            }
+
+            50% {
+                transform: translateX(15%) rotate(180deg)
+            }
+
+            100% {
+                transform: translateX(-15%) rotate(360deg)
+            }
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.1;
+            letter-spacing: .2px;
+        }
+
+        .brand .sub {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        nav a,
+        .btn {
+            color: var(--text);
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        nav a:hover,
+        .btn:hover {
+            transform: translateY(-1px);
+            border-color: var(--border);
+            background: rgba(255, 255, 255, .04);
+            box-shadow: 0 0 0 6px rgba(87, 198, 255, .08);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            min-width: 220px;
+        }
+
+        .more-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .more-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 10px);
+            z-index: 60;
+            padding: 10px;
+            min-width: 180px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: color-mix(in srgb, var(--bg1) 86%, transparent);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+        }
+
+        .more-menu.open {
+            display: block;
+        }
+
+        .more-menu .more-item {
+            width: 100%;
+            justify-content: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .more-menu .more-item:last-child {
+            margin-bottom: 0;
+        }
+
+
+        .btn {
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid var(--border);
+        }
+
+        .btn:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 4px var(--ring);
+        }
+
+        .hamburger {
+            display: none;
+            padding: 10px 12px;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 26px 0 8px;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.25fr .75fr;
+            gap: 18px;
+            align-items: stretch;
+        }
+
+        .card {
+            background: color-mix(in srgb, var(--card) 88%, transparent);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .hero-main {
+            padding: 22px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-main:before {
+            content: "";
+            position: absolute;
+            inset: -120px -80px auto auto;
+            width: 240px;
+            height: 240px;
+            background: radial-gradient(circle at 30% 30%, rgba(87, 198, 255, .35), transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(124, 92, 255, .30), transparent 60%);
+            filter: blur(1px);
+            transform: rotate(10deg);
+            opacity: .9;
+            pointer-events: none;
+        }
+
+        .hero-top {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .avatar {
+            width: 86px;
+            height: 86px;
+            border-radius: 22px;
+            border: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(87, 198, 255, .18), rgba(124, 92, 255, .18));
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            flex: 0 0 auto;
+            box-shadow: 0 0 0 8px rgba(87, 198, 255, .08);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: saturate(1.05) contrast(1.05);
+        }
+
+        .hero-title {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: .2px;
+            line-height: 1.1;
+        }
+
+        .hero-meta {
+            margin: 10px 0 0;
+            color: var(--muted);
+            font-weight: 650;
+            font-size: 14px;
+        }
+
+        .hero-bio {
+            margin: 14px 0 0;
+            color: color-mix(in srgb, var(--muted) 75%, var(--text));
+            line-height: 1.6;
+            font-weight: 600;
+            max-width: 62ch;
+        }
+
+        .chips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .chip {
+            padding: 10px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        .hero-side {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mini-stats {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .stat {
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .03);
+        }
+
+        .stat .k {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 800
+        }
+
+        .stat .v {
+            font-size: 16px;
+            font-weight: 900;
+            margin-top: 6px
+        }
+
+        .notice {
+            margin-top: auto;
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px dashed var(--border);
+            color: var(--muted);
+            line-height: 1.45;
+            font-weight: 650;
+            font-size: 13px;
+            background: rgba(255, 255, 255, .02);
+        }
+
+        /* Sections */
+        main {
+            padding: 8px 0 70px;
+        }
+
+        section {
+            padding: 28px 0;
+            scroll-margin-top: calc(var(--headerH) + 14px);
+        }
+
+        .section-head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            margin: 0;
+            font-size: 20px;
+            letter-spacing: .2px;
+        }
+
+        .section-desc {
+            margin: 0;
+            color: var(--muted);
+            font-weight: 650;
+            line-height: 1.5;
+            max-width: 72ch;
+        }
+
+        .topics {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .topic {
+            padding: 16px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .topic:after {
+            content: "";
+            position: absolute;
+            inset: -60px -60px auto auto;
+            width: 130px;
+            height: 130px;
+            background: radial-gradient(circle at 30% 30%, rgba(87, 198, 255, .25), transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(124, 92, 255, .22), transparent 60%);
+            opacity: .75;
+            pointer-events: none;
+        }
+
+        .topic h3 {
+            margin: 0 0 10px;
+            font-size: 16px;
+            letter-spacing: .2px;
+        }
+
+        .topic p {
+            margin: 0 0 12px;
+            color: var(--muted);
+            font-weight: 650;
+            line-height: 1.55;
+            font-size: 13px;
+        }
+
+        .diagram {
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .02);
+            padding: 12px;
+            overflow: auto;
+        }
+
+        /* OSI layers */
+        .osi {
+            display: grid;
+            grid-template-rows: repeat(7, minmax(42px, auto));
+            gap: 8px;
+            min-width: 320px;
+        }
+
+        .layer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .03);
+            position: relative;
+        }
+
+        .layer b {
+            font-size: 13px
+        }
+
+        .layer span {
+            color: var(--muted);
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        .layer:before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, var(--accent), var(--accent2));
+            box-shadow: 0 0 0 6px rgba(87, 198, 255, .10);
+            flex: 0 0 auto;
+        }
+
+        .layer:nth-child(odd):before {
+            background: linear-gradient(180deg, var(--accent2), var(--accent));
+        }
+
+        /* Modulation waveforms */
+        .wave-wrap {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            min-width: 320px;
+        }
+
+        .wave {
+            height: 150px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .02);
+            display: grid;
+            place-items: center;
+        }
+
+        /* Media cable */
+        .media-grid {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 12px;
+            min-width: 360px;
+            align-items: start;
+        }
+
+        .media-svg {
+            width: 160px;
+            max-width: 100%;
+        }
+
+        .media-list {
+            margin: 0;
+            padding-left: 18px;
+            color: var(--muted);
+            font-weight: 700;
+            line-height: 1.6;
+            font-size: 13px
+        }
+
+        /* Error detection */
+        .flow {
+            min-width: 320px
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .node {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .03);
+        }
+
+        .node b {
+            font-size: 13px
+        }
+
+        .node small {
+            color: var(--muted);
+            font-weight: 800
+        }
+
+        .arrow {
+            height: 10px;
+            position: relative;
+            margin: 2px 0;
+        }
+
+        .arrow:before {
+            content: "";
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            top: 4px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(87, 198, 255, .8), rgba(124, 92, 255, .8));
+        }
+
+        .arrow:after {
+            content: "";
+            position: absolute;
+            right: 12px;
+            top: 1px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid rgba(124, 92, 255, .8);
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+        }
+
+        /* Multiplexing */
+        .mux {
+            min-width: 320px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .mux-row {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .box {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .03);
+            min-height: 54px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .box b {
+            font-size: 13px
+        }
+
+        .box small {
+            color: var(--muted);
+            font-weight: 850;
+            margin-top: 6px
+        }
+
+        .mux-arrows {
+            width: 100%;
+            height: 28px;
+            position: relative;
+            opacity: .95;
+        }
+
+        .mux-arrows:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 13px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(87, 198, 255, .8), rgba(124, 92, 255, .8));
+        }
+
+        .mux-arrows:after {
+            content: "";
+            position: absolute;
+            left: 18px;
+            top: 7px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid rgba(87, 198, 255, .9);
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            animation: dash 1.2s ease-in-out infinite;
+        }
+
+        @keyframes dash {
+            0% {
+                transform: translateX(0)
+            }
+
+            50% {
+                transform: translateX(60px)
+            }
+
+            100% {
+                transform: translateX(0)
+            }
+        }
+
+        /* Telegraph */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .telegraph svg,
+        .telegraph canvas {
+            width: 100%;
+            height: auto;
+        }
+
+        .video-card iframe {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(0, 0, 0, .2);
+        }
+
+        /* Resources */
+        .resources {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .resource-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .link-card {
+            padding: 14px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .03);
+        }
+
+        .link-card a {
+            font-weight: 900;
+            color: var(--accent);
+            text-decoration: none
+        }
+
+        .link-card a:hover {
+            text-decoration: underline
+        }
+
+        .upload {
+            padding: 14px;
+            border-radius: 14px;
+            border: 1px dashed var(--border);
+            background: rgba(255, 255, 255, .02);
+        }
+
+        .upload input {
+            width: 100%
+        }
+
+        .pdf-preview {
+            margin-top: 12px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, .02);
+            overflow: hidden;
+        }
+
+        .pdf-preview iframe {
+            width: 100%;
+            height: 420px;
+            border: 0;
+            display: block;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .pdf-preview {
+            margin-top: 12px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, .02);
+            overflow: hidden;
+        }
+
+        footer {
+            padding: 20px 0 35px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-weight: 650;
+            background: color-mix(in srgb, var(--bg1) 65%, transparent);
+        }
+
+        .foot-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .copy {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .copy input {
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .03);
+            color: var(--muted);
+            width: min(520px, 100%);
+        }
+
+        .small-btn {
+            padding: 10px 12px;
+            font-size: 13px
+        }
+
+        /* Responsive */
+        @media (max-width: 980px) {
+            .hero-grid {
+                grid-template-columns: 1fr
+            }
+
+            .topics {
+                grid-template-columns: 1fr
+            }
+
+            .two-col {
+                grid-template-columns: 1fr
+            }
+
+            .resources {
+                grid-template-columns: 1fr
+            }
+
+            .brand {
+                min-width: auto
+            }
+
+            .nav-actions {
+                min-width: auto
+            }
+        }
+
+        @media (max-width: 980px) {
+            nav ul {
+                display: none
+            }
+
+            .hamburger {
+                display: inline-flex
+            }
+
+            .nav {
+                gap: 2px;
+            }
+
+            .nav-actions {
+                gap: 8px
+            }
+        }
+
+        .mobile-menu {
+            display: none;
+            padding: 10px 0 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .mobile-menu.open {
+            display: block
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .02);
+            margin-bottom: 10px;
+            font-weight: 900;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        /* Print */
+        @media print {
+            body {
+                background: #fff;
+                color: #000;
+            }
+
+            header,
+            .nav-actions,
+            .hamburger,
+            .grid-overlay,
+            #bg {
+                display: none !important;
+            }
+
+            .card {
+                box-shadow: none;
+            }
+
+            a {
+                color: #000;
+                text-decoration: none
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            section {
+                break-inside: avoid;
+            }
+
+            footer {
+                color: #000;
+            }
+        }
+
+        /* Simple icons */
+        .icon {
+            width: 18px;
+            height: 18px;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="bg" aria-hidden="true"></canvas>
+    <div class="bg-image" aria-hidden="true"></div>
+    <div class="grid-overlay" aria-hidden="true"></div>
+
+
+    <header>
+        <div class="container nav">
+            <div class="brand" aria-label="Brand">
+                <div class="logo" aria-hidden="true">
+                    <img alt="Twene Ebenezer" src="./my profile.jpg.jpeg"
+                        style="width:100%;height:100%;object-fit:cover;display:block;" />
+                </div>
+                <div>
+                    <h1>Twene Ebenezer</h1>
+                    <div class="sub">PUIT/24110071</div>
+                </div>
+            </div>
+
+            <nav aria-label="Primary">
+                <ul class="desktop-links">
+                    <li><a href="#osi">OSI & TCP/IP</a></li>
+                    <li><a href="#modulation">Analog vs Digital</a></li>
+                    <li><a href="#media">Transmission Media</a></li>
+                    <li><a href="#errors">Error Detection</a></li>
+                    <li><a href="#mux">Multiplexing & Switching</a></li>
+                    <li><a href="#telegraph">Telegraph</a></li>
+                    <li><a href="#resources">Resources</a></li>
+                    <li><a href="#inspire">What Inspires Me</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions no-print">
+                <button class="btn hamburger" id="hamburger" aria-label="Open menu" type="button">
+                    <span class="icon" aria-hidden="true">☰</span> Menu
+                </button>
+
+                <div class="more-wrap" aria-label="More actions">
+                    <button class="btn" type="button" id="moreBtn" aria-label="More">
+                        <span class="icon" aria-hidden="true">⋯</span>
+                        More
+                    </button>
+
+                    <div class="more-menu" id="moreMenu" role="menu" aria-label="More menu">
+                        <button class="btn more-item" id="themeToggle" type="button" aria-label="Toggle dark/light">
+                            <span class="icon" aria-hidden="true">🌓</span>
+                            <span id="themeLabel">Dark</span>
+                        </button>
+                        <button class="btn more-item" id="printBtn" type="button" aria-label="Print">
+                            <span class="icon" aria-hidden="true">🖨️</span>
+                            Print
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <div class="container mobile-menu no-print" id="mobileMenu" aria-label="Mobile menu">
+        <a href="#osi">OSI & TCP/IP</a>
+        <a href="#modulation">Analog vs Digital</a>
+        <a href="#media">Transmission Media</a>
+        <a href="#errors">Error Detection</a>
+        <a href="#mux">Multiplexing & Switching</a>
+        <a href="#telegraph">Telegraph</a>
+        <a href="#resources">Resources</a>
+        <a href="#inspire">What Inspires Me</a>
+    </div>
+
+    <main class="container">
+        <section class="hero" aria-label="Hero">
+            <div class="hero-grid">
+                <div class="card hero-main">
+                    <div class="hero-top">
+                        <div class="avatar" aria-label="Profile image">
+                            <img alt="Twene Ebenezer profile picture" src="./my profile.jpg.jpeg" />
+                        </div>
+                        <div>
+                            <h2 class="hero-title">Data Communication Summary </h2>
+                            <div class="hero-meta">Student ID: PUIT/24110071</div>
+                        </div>
+                    </div>
+
+                    <p class="hero-bio">
+                        I’m Twene Ebenezer, building a clear, visual roadmap of how information moves across networks.
+                        This hub focuses on core concepts: layered protocols, modulation, transmission media,
+                        reliability,
+                        and efficient sharing through multiplexing and switching.
+                    </p>
+
+                    <div class="chips" aria-label="Highlights">
+                        <div class="chip">Dark/Light theme</div>
+                        <div class="chip">Animated network background</div>
+                        <div class="chip">Printable layout</div>
+                        <div class="chip">Responsive diagrams</div>
+                    </div>
+                </div>
+
+                <aside class="card hero-side" aria-label="Quick facts">
+                    <div class="mini-stats">
+                        <div class="stat">
+                            <div class="k">Focus</div>
+                            <div class="v">Core Data Comms Topics</div>
+                        </div>
+                        <div class="stat">
+                            <div class="k">Includes</div>
+                            <div class="v">Telegraph SVG + Video</div>
+                        </div>
+                        <div class="stat">
+                            <div class="k">Format</div>
+                            <div class="v">Diagrams + Flow + Upload</div>
+                        </div>
+                    </div>
+                    <div class="notice">
+                        Tip: Use the navbar to jump between sections (smooth scroll). The “Print” button renders a clean
+                        layout by hiding the animated background and controls.
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <section id="inspire" aria-label="What inspires me">
+            <div class="section-head">
+                <div>
+                    <h2 class="section-title">What Inspires Me</h2>
+                    <p class="section-desc">I’m inspired by the elegance of communication, how simple signals, timing,
+                        and clever encoding can create reliable, global connections.</p>
+                </div>
+            </div>
+            <div class="card" style="padding:16px;">
+                <div class="topics" style="grid-template-columns: 1fr;">
+                    <div class="topic" style="padding:16px;">
+                        <h3 style="margin-bottom:8px;">“My Reason”</h3>
+                        <p>
+                            Data communication is the bridge between imagination and reality. From modulation schemes
+                            that map bits to waveforms,
+                            to error control that preserves meaning in noisy channels each topic shows how engineering
+                            turns uncertainty into trust.
+                        </p>
+                        <div class="chips">
+                            <div class="chip">Reliability over noise</div>
+                            <div class="chip">Efficiency in sharing channels</div>
+                            <div class="chip">Clarity of layered thinking</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section aria-label="Five topics">
+            <div class="section-head">
+                <div>
+                    <h2 class="section-title">Core Topics (Visual Diagrams)</h2>
+                    <p class="section-desc">Each topic includes a diagram to support quick revision and conceptual
+                        understanding.</p>
+                </div>
+            </div>
+
+            <div class="topics">
+                <!-- 1 -->
+                <article class="card topic" id="osi">
+                    <h3>1. OSI Model & TCP/IP Suite</h3>
+                    <p>Layered design helps explain functions like addressing, routing, reliability, and application
+                        services.</p>
+                    <div class="diagram">
+                        <div class="osi" role="img" aria-label="OSI layers diagram">
+                            <div class="layer"><b>7. Application</b><span>HTTP, DNS, SMTP</span></div>
+                            <div class="layer"><b>6. Presentation</b><span>Encryption, format</span></div>
+                            <div class="layer"><b>5. Session</b><span>Dialog control</span></div>
+                            <div class="layer"><b>4. Transport</b><span>TCP/UDP (ports)</span></div>
+                            <div class="layer"><b>3. Network</b><span>IP (routing)</span></div>
+                            <div class="layer"><b>2. Data Link</b><span>Framing, MAC</span></div>
+                            <div class="layer"><b>1. Physical</b><span>Signals & media</span></div>
+                        </div>
+                    </div>
+                    <p style="margin-top:12px;">TCP/IP typically maps into fewer layers, but the key idea remains:
+                        divide responsibilities for stability and scalability.</p>
+                </article>
+
+                <!-- 2 -->
+                <article class="card topic" id="modulation">
+                    <h3>2. Analog vs Digital Transmission (ASK, FSK, PSK, QAM)</h3>
+                    <p>Modulation converts bits into waveforms. Different schemes trade off bandwidth, noise tolerance,
+                        and complexity.</p>
+                    <div class="diagram">
+                        <div class="wave-wrap">
+                            <div class="wave" aria-label="ASK waveform diagram" role="img">
+                                <svg viewBox="0 0 520 160" width="100%" height="150">
+                                    <defs>
+                                        <linearGradient id="ask" x1="0" y1="0" x2="1" y2="0">
+                                            <stop offset="0" stop-color="var(--accent)" stop-opacity="0.95" />
+                                            <stop offset="1" stop-color="var(--accent2)" stop-opacity="0.95" />
+                                        </linearGradient>
+                                    </defs>
+                                    <rect x="0" y="0" width="520" height="160" fill="transparent" />
+                                    <g stroke="#ffffff1a" stroke-width="1">
+                                        <line x1="0" y1="80" x2="520" y2="80" />
+                                        <line x1="0" y1="40" x2="520" y2="40" />
+                                        <line x1="0" y1="120" x2="520" y2="120" />
+                                    </g>
+                                    <!-- ASK: amplitude toggles -->
+                                    <path d="M0 80 L0 80" fill="none" />
+                                    <path
+                                        d="M0 80 C20 80 40 60 60 60 C80 60 100 80 120 80 C140 80 160 60 180 60 C200 60 220 80 240 80 C260 80 280 50 300 50 C320 50 340 80 360 80 C380 80 400 60 420 60 C440 60 460 80 480 80 C500 80 510 70 520 70"
+                                        fill="none" stroke="url(#ask)" stroke-width="3" stroke-linecap="round" />
+                                    <path
+                                        d="M0 80 C20 80 40 80 60 80 C80 80 100 80 120 80 C140 80 160 80 180 80 C200 80 220 80 240 80 C260 80 280 80 300 80 C320 80 340 80 360 80 C380 80 400 80 420 80 C440 80 460 80 480 80 C500 80 510 80 520 80"
+                                        fill="none" stroke="url(#ask)" stroke-width="3" stroke-dasharray="6 10"
+                                        opacity=".35" />
+                                    <text x="18" y="28" fill="var(--muted)" font-weight="800" font-size="12">ASK:
+                                        amplitude varies with bits</text>
+                                </svg>
+                            </div>
+
+                            <div class="wave" aria-label="FSK/PSK/QAM waveform diagram" role="img">
+                                <svg viewBox="0 0 520 160" width="100%" height="150">
+                                    <defs>
+                                        <linearGradient id="fsk" x1="0" y1="0" x2="1" y2="0">
+                                            <stop offset="0" stop-color="var(--accent)" />
+                                            <stop offset="1" stop-color="var(--accent2)" />
+                                        </linearGradient>
+                                    </defs>
+                                    <g stroke="#ffffff1a" stroke-width="1">
+                                        <line x1="0" y1="80" x2="520" y2="80" />
+                                        <line x1="0" y1="40" x2="520" y2="40" />
+                                        <line x1="0" y1="120" x2="520" y2="120" />
+                                    </g>
+
+                                    <!-- FSK: frequency changes -->
+                                    <path
+                                        d="M0 95 C20 70 40 70 60 95 C80 120 100 120 120 95 C140 70 160 70 180 95 C200 120 220 120 240 95 C260 70 280 70 300 95 C320 120 340 120 360 95 C380 70 400 70 420 95 C440 120 460 120 480 95 C500 70 510 70 520 95"
+                                        fill="none" stroke="url(#fsk)" stroke-width="3" opacity=".95" />
+                                    <!-- PSK: phase shift -->
+                                    <path
+                                        d="M0 80 C20 60 40 60 60 80 C80 100 100 100 120 80 C140 60 160 60 180 80 C200 100 220 100 240 80 C260 60 280 60 300 80 C320 100 340 100 360 80 C380 60 400 60 420 80 C440 100 460 100 480 80 C500 60 510 60 520 80"
+                                        fill="none" stroke="var(--accent2)" stroke-width="2.6" opacity=".65"
+                                        stroke-dasharray="4 8" />
+
+                                    <!-- QAM: constellation hint -->
+                                    <g transform="translate(0,0)" opacity=".95">
+                                        <text x="18" y="28" fill="var(--muted)" font-weight="800" font-size="12">FSK /
+                                            PSK (wave hints) • QAM (constellation) below</text>
+                                        <g transform="translate(330,95) scale(0.95)">
+                                            <circle cx="0" cy="0" r="6" fill="rgba(87,198,255,.8)" />
+                                            <circle cx="30" cy="-22" r="6" fill="rgba(124,92,255,.85)" />
+                                            <circle cx="30" cy="22" r="6" fill="rgba(87,198,255,.8)" />
+                                            <circle cx="0" cy="44" r="6" fill="rgba(124,92,255,.85)" />
+                                            <circle cx="-30" cy="-22" r="6" fill="rgba(124,92,255,.85)" />
+                                            <circle cx="-30" cy="22" r="6" fill="rgba(87,198,255,.8)" />
+                                            <line x1="-45" y1="0" x2="60" y2="0" stroke="#ffffff1a" />
+                                            <line x1="-15" y1="-45" x2="-15" y2="65" stroke="#ffffff1a" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <div style="color:var(--muted);font-weight:800;line-height:1.5;font-size:13px;">
+                                • ASK: amplitude changes • FSK: frequency changes • PSK: phase changes • QAM: amplitude
+                                + phase in a constellation.
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 3 -->
+                <article class="card topic" id="media">
+                    <h3>3. Transmission Media (Twisted Pair, Coaxial, Fiber Optic)</h3>
+                    <p>Different media offer trade-offs among bandwidth, distance, noise immunity, and cost.</p>
+                    <div class="diagram">
+                        <div class="media-grid">
+                            <div class="media-svg" aria-label="Cable cross-section diagram" role="img">
+                                <svg viewBox="0 0 160 220">
+                                    <defs>
+                                        <linearGradient id="tw" x1="0" y1="0" x2="1" y2="1">
+                                            <stop offset="0" stop-color="var(--accent)" stop-opacity="0.55" />
+                                            <stop offset="1" stop-color="var(--accent2)" stop-opacity="0.35" />
+                                        </linearGradient>
+                                    </defs>
+                                    <rect x="30" y="20" width="100" height="180" rx="26" fill="rgba(255,255,255,.03)"
+                                        stroke="rgba(255,255,255,.12)" />
+                                    <rect x="40" y="35" width="80" height="150" rx="22" fill="rgba(255,255,255,.02)"
+                                        stroke="rgba(255,255,255,.10)" />
+                                    <!-- Two twisted pairs -->
+                                    <path d="M55 60 C65 45 75 45 85 60 C95 75 105 75 115 60" fill="none"
+                                        stroke="url(#tw)" stroke-width="4" opacity=".9" />
+                                    <path d="M45 85 C55 70 65 70 75 85 C85 100 95 100 105 85" fill="none"
+                                        stroke="rgba(87,198,255,.7)" stroke-width="4" opacity=".85" />
+                                    <path d="M55 110 C65 95 75 95 85 110 C95 125 105 125 115 110" fill="none"
+                                        stroke="rgba(124,92,255,.75)" stroke-width="4" opacity=".85" />
+                                    <!-- Labels -->
+                                    <text x="80" y="190" text-anchor="middle" font-weight="900" fill="var(--muted)"
+                                        font-size="12">Cross-section</text>
+                                </svg>
+                            </div>
+                            <div>
+                                <ul class="media-list">
+                                    <li><b style="color:var(--text)">Twisted Pair</b> — two conductors twisted to reduce
+                                        EMI</li>
+                                    <li><b style="color:var(--text)">Coaxial</b> — central core + shield for better
+                                        shielding</li>
+                                    <li><b style="color:var(--text)">Fiber Optic</b> — light pulses for maximum
+                                        bandwidth & distance</li>
+                                </ul>
+                                <div class="chips" style="margin-top:12px;">
+                                    <div class="chip">Noise immune ↑</div>
+                                    <div class="chip">Bandwidth ↑</div>
+                                    <div class="chip">Distance ↑</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 4 -->
+                <article class="card topic" id="errors">
+                    <h3>4. Error Detection & Correction (CRC, Checksum, Hamming Code)</h3>
+                    <p>Techniques add redundancy so receivers can detect (and sometimes correct) corrupted bits.</p>
+                    <div class="diagram">
+                        <div class="flow" role="img" aria-label="Error detection and correction flow">
+                            <div class="steps">
+                                <div class="node"><b>Sender</b><small>data bits</small></div>
+                                <div class="arrow" aria-hidden="true"></div>
+                                <div class="node"><b>Encode redundancy</b><small>CRC / checksum / Hamming</small></div>
+                                <div class="arrow" aria-hidden="true"></div>
+                                <div class="node"><b>Transmit</b><small>channel noise may alter bits</small></div>
+                                <div class="arrow" aria-hidden="true"></div>
+                                <div class="node"><b>Receiver</b><small>re-check & syndrome</small></div>
+                                <div class="arrow" aria-hidden="true"></div>
+                                <div class="node"><b>Outcome</b><small>detect ✓ / correct bit ✓</small></div>
+                            </div>
+                            <div
+                                style="margin-top:12px;color:var(--muted);font-weight:750;line-height:1.55;font-size:13px;">
+                                • <b style="color:var(--text)">CRC</b>: polynomial remainder detection • <b
+                                    style="color:var(--text)">Checksum</b>: sum-based verification • <b
+                                    style="color:var(--text)">Hamming</b>: parity bits to correct single-bit errors.
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 5 -->
+                <article class="card topic" id="mux">
+                    <h3>5. Multiplexing & Switching (FDM, TDM, WDM, Circuit/Packet Switching)</h3>
+                    <p>Shared links use multiplexing; network devices choose how data flows using switching strategies.
+                    </p>
+                    <div class="diagram">
+                        <div class="mux" role="img" aria-label="Multiplexing and switching illustration">
+                            <div class="box" style="min-height:64px;">
+                                <b>Multiplexing</b>
+                                <small>Combine multiple signals onto one medium</small>
+                            </div>
+                            <div class="mux-arrows" aria-hidden="true"></div>
+                            <div class="mux-row">
+                                <div class="box"><b>FDM</b><small>Separate by frequency bands</small></div>
+                                <div class="box"><b>TDM</b><small>Separate by time slots</small></div>
+                            </div>
+                            <div class="mux-row">
+                                <div class="box"><b>WDM</b><small>Optical wavelengths (dense)</small></div>
+                                <div class="box"><b>Switching</b><small>Circuit vs Packet</small></div>
+                            </div>
+                            <div style="color:var(--muted);font-weight:800;line-height:1.6;font-size:13px;">
+                                • Circuit switching reserves a path • Packet switching shares links dynamically for
+                                efficiency.
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 6 -->
+                <article class="card topic" id="flowcontrol">
+                    <h3>6. Flow Control & Buffering (Stop-and-Wait, Sliding Window)</h3>
+                    <p>Flow control prevents a fast sender from overwhelming a slow receiver by managing the rate of
+                        data.</p>
+                    <div class="diagram">
+                        <div class="flow" role="img" aria-label="Flow control overview">
+                            <div class="steps">
+                                <div class="node"><b>Sender</b><small>produces data</small></div>
+                                <div class="arrow" aria-hidden="true"></div>
+                                <div class="node"><b>Window</b><small>tracks allowed frames</small></div>
+                                <div class="arrow" aria-hidden="true"></div>
+                                <div class="node"><b>Receiver</b><small>checks buffer space</small></div>
+                                <div class="arrow" aria-hidden="true"></div>
+                                <div class="node"><b>Feedback</b><small>ACK / Window update</small></div>
+                                <div class="arrow" aria-hidden="true"></div>
+                                <div class="node"><b>Result</b><small>stable delivery</small></div>
+                            </div>
+                            <div
+                                style="margin-top:12px;color:var(--muted);font-weight:750;line-height:1.55;font-size:13px;">
+                                • <b style="color:var(--text)">Stop-and-Wait</b>: simple, lower throughput • <b
+                                    style="color:var(--text)">Sliding Window</b>: higher throughput.
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 7 -->
+                <article class="card topic" id="protocolstack">
+                    <h3>7. Data Encapsulation & Packet Formats</h3>
+                    <p>Encapsulation wraps data with headers/trailers at each layer so the receiver can interpret it
+                        correctly.</p>
+                    <div class="diagram">
+                        <div class="osi" role="img" aria-label="Encapsulation overview">
+                            <div class="layer"><b>Payload</b><span>application data</span></div>
+                            <div class="layer"><b>Header</b><span>addresses/ports</span></div>
+                            <div class="layer"><b>Framing</b><span>MAC + integrity</span></div>
+                            <div class="layer"><b>Bit stream</b><span>coding/modulation</span></div>
+                            <div class="layer"><b>Transmission</b><span>signals on medium</span></div>
+                            <div class="layer"><b>Decapsulation</b><span>remove headers</span></div>
+                        </div>
+                        <div style="margin-top:12px;color:var(--muted);font-weight:750;line-height:1.6;font-size:13px;">
+                            Key idea: each layer adds its own “description” so the next hop can process the message.
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 8 -->
+                <article class="card topic" id="routing">
+                    <h3>8. Routing Concepts (Next-Hop, Tables, Metrics)</h3>
+                    <p>Routers choose paths using forwarding tables and metrics like cost, delay, or hop count.</p>
+                    <div class="diagram">
+                        <div class="media-grid" style="grid-template-columns: 180px 1fr;">
+                            <div class="media-svg" aria-label="Routing diagram" role="img">
+                                <svg viewBox="0 0 180 220" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <linearGradient id="rt" x1="0" y1="0" x2="1" y2="1">
+                                            <stop offset="0" stop-color="var(--accent)" stop-opacity="0.8" />
+                                            <stop offset="1" stop-color="var(--accent2)" stop-opacity="0.6" />
+                                        </linearGradient>
+                                    </defs>
+                                    <rect x="18" y="20" width="144" height="180" rx="18" fill="rgba(255,255,255,.02)"
+                                        stroke="rgba(255,255,255,.12)" />
+                                    <circle cx="52" cy="70" r="10" fill="rgba(87,198,255,.25)"
+                                        stroke="rgba(87,198,255,.7)" />
+                                    <circle cx="90" cy="110" r="10" fill="rgba(124,92,255,.22)"
+                                        stroke="rgba(124,92,255,.7)" />
+                                    <circle cx="128" cy="150" r="10" fill="rgba(87,198,255,.18)"
+                                        stroke="rgba(87,198,255,.6)" />
+                                    <path d="M52 70 C70 88 80 98 90 110 C100 122 112 134 128 150" fill="none"
+                                        stroke="url(#rt)" stroke-width="4" />
+                                    <path d="M128 150 L60 168" fill="none" stroke="rgba(255,255,255,.18)"
+                                        stroke-width="3" />
+                                    <text x="90" y="205" text-anchor="middle" font-size="12" font-weight="900"
+                                        fill="var(--muted)">Next-hop</text>
+                                </svg>
+                            </div>
+                            <div>
+                                <ul class="media-list">
+                                    <li><b style="color:var(--text)">Forwarding table</b> — destination → next hop</li>
+                                    <li><b style="color:var(--text)">Metrics</b> — delay, cost, reliability</li>
+                                    <li><b style="color:var(--text)">Convergence</b> — adapt after failures</li>
+                                </ul>
+                                <div class="chips" style="margin-top:12px;">
+                                    <div class="chip">Hop-by-hop</div>
+                                    <div class="chip">Best path</div>
+                                    <div class="chip">Fast reroute</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 9 -->
+                <article class="card topic" id="congestion">
+                    <h3>9. Congestion Control & Avoidance (TCP Basics)</h3>
+                    <p>Congestion control prevents network overload by reducing sending rate when losses/queues grow.
+                    </p>
+                    <div class="diagram">
+                        <div class="flow" role="img" aria-label="Congestion control diagram">
+                            <div class="steps">
+                                <div class="node"><b>Send</b><small>increase window</small></div>
+                                <div class="arrow" aria-hidden="true"></div>
+                                <div class="node"><b>Queue grows</b><small>delay increases</small></div>
+                                <div class="arrow" aria-hidden="true"></div>
+                                <div class="node"><b>Detect</b><small>loss/ECN signals</small></div>
+                                <div class="arrow" aria-hidden="true"></div>
+                                <div class="node"><b>React</b><small>decrease window</small></div>
+                                <div class="arrow" aria-hidden="true"></div>
+                                <div class="node"><b>Stabilize</b><small>recover throughput</small></div>
+                            </div>
+                            <div
+                                style="margin-top:12px;color:var(--muted);font-weight:750;line-height:1.55;font-size:13px;">
+                                • <b style="color:var(--text)">Slow start</b> increases cautiously • <b
+                                    style="color:var(--text)">Congestion avoidance</b> probes capacity.
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 10 -->
+                <article class="card topic" id="security">
+                    <h3>10. Security Basics in Communication (Integrity, Authentication, Encryption)</h3>
+                    <p>Security ensures messages are private, unmodified, and sent by valid parties.</p>
+                    <div class="diagram">
+                        <div class="mux" role="img" aria-label="Security mechanisms">
+                            <div class="box"><b>Encryption</b><small>confidentiality</small></div>
+                            <div class="box"><b>Integrity</b><small>hash + MAC</small></div>
+                            <div class="box"><b>Authentication</b><small>verify sender</small></div>
+                            <div class="box"><b>Key exchange</b><small>establish secrets</small></div>
+                            <div class="box"><b>Result</b><small>safe communication</small></div>
+                        </div>
+                        <div style="margin-top:12px;color:var(--muted);font-weight:750;line-height:1.6;font-size:13px;">
+                            In the OSI stack, these functions typically live in/above the Transport/Presentation layers.
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+
+        <section id="telegraph" aria-label="Telegraph section">
+            <div class="section-head">
+                <div>
+                    <h2 class="section-title">Telegraph</h2>
+                    <p class="section-desc">A classic mechanism that turns patterns of signals into meaningful
+                        communication.</p>
+                </div>
+            </div>
+
+            <div class="two-col">
+                <div class="card" style="padding:16px;" role="img" aria-label="Telegraph diagram">
+                    <div class="telegraph">
+                        <svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+                                    <stop offset="0" stop-color="var(--accent)" stop-opacity=".95" />
+                                    <stop offset="1" stop-color="var(--accent2)" stop-opacity=".95" />
+                                </linearGradient>
+                                <filter id="glow">
+                                    <feGaussianBlur stdDeviation="3.5" result="b" />
+                                    <feMerge>
+                                        <feMergeNode in="b" />
+                                        <feMergeNode in="SourceGraphic" />
+                                    </feMerge>
+                                </filter>
+                            </defs>
+
+                            <!-- left machine -->
+                            <g>
+                                <rect x="50" y="85" width="220" height="190" rx="18" fill="rgba(255,255,255,.03)"
+                                    stroke="rgba(255,255,255,.15)" />
+                                <rect x="80" y="115" width="160" height="20" rx="8" fill="rgba(255,255,255,.04)" />
+                                <rect x="70" y="150" width="180" height="96" rx="16" fill="rgba(255,255,255,.02)"
+                                    stroke="rgba(255,255,255,.12)" />
+                                <rect x="110" y="160" width="18" height="74" rx="9" fill="url(#beam)" opacity=".9" />
+                                <text x="160" y="305" text-anchor="middle" fill="var(--muted)" font-size="14"
+                                    font-weight="900">Sender</text>
+                            </g>
+
+                            <!-- Morse line -->
+                            <g stroke="rgba(255,255,255,.18)" stroke-width="3">
+                                <line x1="290" y1="180" x2="360" y2="180" />
+                                <line x1="360" y1="180" x2="420" y2="180" />
+                                <line x1="420" y1="180" x2="590" y2="180" />
+                            </g>
+
+                            <!-- signal pulses -->
+                            <g filter="url(#glow)">
+                                <path id="p1" d="M310 180 h30" stroke="url(#beam)" stroke-width="6"
+                                    stroke-linecap="round" opacity=".9" />
+                                <path id="p2" d="M365 180 h15" stroke="url(#beam)" stroke-width="6"
+                                    stroke-linecap="round" opacity=".9" />
+                                <path id="p3" d="M395 180 h45" stroke="url(#beam)" stroke-width="6"
+                                    stroke-linecap="round" opacity=".9" />
+                            </g>
+
+                            <!-- receiver machine -->
+                            <g>
+                                <rect x="450" y="85" width="150" height="190" rx="18" fill="rgba(255,255,255,.03)"
+                                    stroke="rgba(255,255,255,.15)" />
+                                <rect x="475" y="120" width="100" height="130" rx="14" fill="rgba(255,255,255,.02)"
+                                    stroke="rgba(255,255,255,.12)" />
+                                <circle cx="525" cy="185" r="18" fill="rgba(255,255,255,.05)"
+                                    stroke="rgba(255,255,255,.18)" />
+                                <circle cx="525" cy="185" r="7" fill="url(#beam)" opacity=".9" />
+                                <text x="525" y="305" text-anchor="middle" fill="var(--muted)" font-size="14"
+                                    font-weight="900">Receiver</text>
+                            </g>
+
+                            <!-- bottom label -->
+                            <text x="320" y="60" text-anchor="middle" fill="var(--muted)" font-size="15"
+                                font-weight="900">Morse-style signal pattern</text>
+                        </svg>
+                    </div>
+                    <div style="margin-top:10px;color:var(--muted);font-weight:750;line-height:1.6;font-size:13px;">
+                        The animation pulses indicate how “on/off” intervals map to transmitted symbols.
+                    </div>
+                </div>
+
+                <div class="card video-card" style="padding:16px;">
+                    <h3 style="margin:0 0 12px;">Embedded Video</h3>
+                    <iframe title="Telegraph video" src="https://www.youtube.com/embed/McHw0tCrZe4"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen>
+                    </iframe>
+                    <div style="margin-top:12px;color:var(--muted);font-weight:750;line-height:1.6;font-size:13px;">
+                        Video embedded from the provided link.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="resources" aria-label="Resources">
+            <div class="section-head">
+                <div>
+                    <h2 class="section-title">Resources & Links</h2>
+                    <p class="section-desc">Useful references, a clickable PDF link (for your Turnitin submission), and
+                        an area to upload your Turnitin PDF.</p>
+                </div>
+            </div>
+
+            <div class="resources">
+                <div class="resource-list">
+                    <div class="link-card">
+                        <div style="color:var(--muted);font-weight:850;">Turnitin Submission PDF (click to read)</div>
+                        <a href="./ADVANCED%20DATA%20COMMUNICATION.pdf" target="_blank" rel="noopener">Open: ADVANCED
+                            DATA COMMUNICATION.pdf (new tab)</a>
+                        <div style="margin-top:8px;color:var(--muted);font-weight:700;font-size:13px;line-height:1.45;">
+
+                        </div>
+
+
+                        <div class="link-card">
+                            <div style="color:var(--muted);font-weight:850;">Telegraph YouTube</div>
+                            <a href="https://youtu.be/McHw0tCrZe4?si=NY9rYA1ojGNlVYbD" target="_blank"
+                                rel="noopener">Watch
+                                telegraph video (new tab)</a>
+                        </div>
+
+                    </div>
+
+                    <div class="pdf-preview" id="pdfPreview" style="display:none;">
+                        <iframe id="pdfFrame" title="PDF preview"></iframe>
+                    </div>
+
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer aria-label="Footer">
+        <div class="container foot-grid">
+            <div>
+                <div style="font-weight:950;color:var(--text);">Footer</div>
+                <div style="margin-top:8px;">Educational personal hub for Data Communication topics.</div>
+            </div>
+            <div class="copy">
+                <input id="repoUrl" type="text"
+                    value="https://github.com/tweneebenezer89-cpu/Data Communication assignment" readonly
+                    aria-label="GitHub repo link" />
+                <button class="btn small-btn" type="button" id="copyRepo" aria-label="Copy repo link">
+                    📋 Copy
+                </button>
+            </div>
+            <div>
+                <a class="btn small-btn" href="https://syntextgrammar.netlify.app" target="_blank" rel="noopener"
+                    style="display:inline-flex;">
+                    Read my syntext grammar notes
+                </a>
+            </div>
+        </div>
+        <div class="container" style="margin-top:14px;color:var(--muted);">
+            Repo name exactly: <b style="color:var(--text)">Data Communication assignment</b>
+        </div>
+    </footer>
+
+    <script>
+        // Theme persistence
+        const root = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const themeLabel = document.getElementById('themeLabel');
+
+        function getPreferredTheme() {
+            const saved = localStorage.getItem('theme');
+            if (saved) return saved;
+            return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+
+        function applyTheme(t) {
+            root.setAttribute('data-theme', t);
+            themeLabel.textContent = (t === 'light') ? 'Light' : 'Dark';
+        }
+
+        applyTheme(getPreferredTheme());
+
+        themeToggle.addEventListener('click', () => {
+            const cur = root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+            const next = cur === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', next);
+            applyTheme(next);
+
+            // Close “more” menu on action
+            moreMenu?.classList.remove('open');
+        });
+
+
+
+        // More menu (dark/light + print)
+        const moreBtn = document.getElementById('moreBtn');
+        const moreMenu = document.getElementById('moreMenu');
+
+        function closeMoreMenu() {
+            moreMenu?.classList.remove('open');
+        }
+
+        moreBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            moreMenu?.classList.toggle('open');
+        });
+
+        document.addEventListener('click', () => closeMoreMenu());
+        moreMenu?.addEventListener('click', (e) => e.stopPropagation());
+
+        // Mobile menu
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        hamburger?.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+        });
+
+
+        mobileMenu?.querySelectorAll('a').forEach(a => {
+            a.addEventListener('click', () => mobileMenu.classList.remove('open'));
+        });
+
+        // Print button (more reliable across browsers)
+        document.getElementById('printBtn').addEventListener('click', () => {
+            try {
+                // Close any open mobile menu to avoid extra spacing in print preview
+                document.getElementById('mobileMenu')?.classList.remove('open');
+
+                // Some browsers require a short delay so layout/styles settle
+                setTimeout(() => {
+                    window.print();
+                }, 50);
+            } catch (e) {
+                window.print();
+            }
+        });
+
+        // Repo copy
+        document.getElementById('copyRepo').addEventListener('click', async () => {
+            const input = document.getElementById('repoUrl');
+            try {
+                await navigator.clipboard.writeText(input.value);
+                const btn = document.getElementById('copyRepo');
+                btn.textContent = '✅ Copied';
+                setTimeout(() => btn.textContent = '📋 Copy', 1200);
+            } catch (e) {
+                input.select();
+                document.execCommand('copy');
+            }
+        });
+
+        // PDF local preview
+        const pdfInput = document.getElementById('pdfInput');
+        const pdfPreview = document.getElementById('pdfPreview');
+        const pdfFrame = document.getElementById('pdfFrame');
+        let pdfUrl = null;
+
+        pdfInput?.addEventListener('change', () => {
+            const file = pdfInput.files && pdfInput.files[0];
+            if (!file) return;
+            if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+            pdfUrl = URL.createObjectURL(file);
+            pdfFrame.src = pdfUrl;
+            pdfPreview.style.display = 'block';
+        });
+
+        // Network animation background (disabled per request)
+        const canvas = document.getElementById('bg');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+
+
+        const state = {
+            w: 0,
+            h: 0,
+            dpr: Math.min(2, window.devicePixelRatio || 1),
+            nodes: [],
+            packets: [],
+            links: [],
+            // “frames” and burst effects
+            frame: { phase: 0 },
+            bursts: [],
+            time: 0
+        };
+
+        function resize() {
+            state.w = window.innerWidth;
+            state.h = window.innerHeight;
+            canvas.width = Math.floor(state.w * state.dpr);
+            canvas.height = Math.floor(state.h * state.dpr);
+            canvas.style.width = state.w + 'px';
+            canvas.style.height = state.h + 'px';
+            ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+            initGraph();
+        }
+
+        function rand(min, max) { return Math.random() * (max - min) + min; }
+
+        function initGraph() {
+            const { w, h } = state;
+            state.nodes = [];
+            state.links = [];
+            state.packets = [];
+
+            // Create a ring-ish node cloud
+            const centerX = w * 0.52;
+            const centerY = h * 0.32;
+            const count = Math.max(10, Math.floor(Math.min(w, h) / 90));
+            for (let i = 0; i < count; i++) {
+                const ang = (i / count) * Math.PI * 2;
+                const radius = rand(120, Math.min(280, Math.max(160, Math.min(w, h) * 0.22)));
+                const x = centerX + Math.cos(ang) * radius + rand(-24, 24);
+                const y = centerY + Math.sin(ang) * radius * 0.72 + rand(-24, 24);
+                const size = rand(2.5, 4.8);
+                state.nodes.push({ x, y, size, phase: rand(0, Math.PI * 2) });
+            }
+
+            // Connect nearest neighbors
+            for (let i = 0; i < state.nodes.length; i++) {
+                let best = [];
+                for (let j = 0; j < state.nodes.length; j++) if (i !== j) {
+                    const dx = state.nodes[i].x - state.nodes[j].x;
+                    const dy = state.nodes[i].y - state.nodes[j].y;
+                    const d2 = dx * dx + dy * dy;
+                    best.push({ j, d2 });
+                }
+                best.sort((a, b) => a.d2 - b.d2);
+                const k = 2 + (i % 3);
+                for (let t = 0; t < Math.min(k, best.length); t++) {
+                    const jj = best[t].j;
+                    if (!state.links.some(l => (l.a === i && l.b === jj) || (l.a === jj && l.b === i))) {
+                        state.links.push({ a: i, b: jj });
+                    }
+                }
+            }
+
+            // seed packets
+            for (let i = 0; i < 18; i++) spawnPacket(true);
+        }
+
+        function spawnPacket(seed = false) {
+            const links = state.links;
+            if (!links.length) return;
+            const L = links[Math.floor(Math.random() * links.length)];
+            const A = state.nodes[L.a];
+            const B = state.nodes[L.b];
+            const t0 = seed ? Math.random() : 0;
+            state.packets.push({
+                a: L.a,
+                b: L.b,
+                t: t0,
+                speed: rand(0.35, 0.75),
+                width: rand(1.6, 3.2),
+                hue: Math.random() < 0.5 ? 0 : 1
+            });
+            if (state.packets.length > 60) state.packets.shift();
+        }
+
+        function getCssVar(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        let last = performance.now();
+        function animate(now) {
+            // Animation disabled per request: render a single static frame.
+            last = now;
+            state.time = state.time || 0;
+
+            ctx.clearRect(0, 0, state.w, state.h);
+
+            const gAccent = getCssVar('--accent');
+            const gAccent2 = getCssVar('--accent2');
+
+            // Static frame line
+            const sweepX = (state.w * 0.52);
+            ctx.save();
+            ctx.globalAlpha = 0.25;
+            ctx.strokeStyle = 'rgba(87,198,255,0.12)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(sweepX, 0);
+            ctx.lineTo(sweepX, state.h);
+            ctx.stroke();
+            ctx.restore();
+
+            // Static routing paths
+            for (const L of state.links) {
+                const A = state.nodes[L.a];
+                const B = state.nodes[L.b];
+                const dx = B.x - A.x, dy = B.y - A.y;
+                const dist = Math.hypot(dx, dy);
+                const alpha = Math.min(0.14, 0.05 + dist / 1600);
+
+                ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(A.x, A.y);
+                ctx.lineTo(B.x, B.y);
+                ctx.stroke();
+
+                ctx.strokeStyle = `rgba(87,198,255,${alpha * 0.45})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(A.x, A.y);
+                ctx.lineTo(B.x, B.y);
+                ctx.stroke();
+            }
+
+            // Static nodes
+            for (const n of state.nodes) {
+                const r = n.size + 0.25;
+                const col = n.hue ? gAccent2 : gAccent;
+
+                ctx.save();
+                ctx.globalAlpha = 0.65;
+                ctx.fillStyle = col;
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.globalAlpha = 0.25;
+                ctx.strokeStyle = 'rgba(87,198,255,0.20)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, r + 1.5, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // Do not animate packets: keep background static.
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        requestAnimationFrame(animate);
+
+        // Telegraph pulse animation disabled per request (static opacity)
+        const pulses = [document.getElementById('p1'), document.getElementById('p2'), document.getElementById('p3')];
+        if (pulses[0]) pulses[0].style.opacity = '0.95';
+        if (pulses[1]) pulses[1].style.opacity = '0.25';
+        if (pulses[2]) pulses[2].style.opacity = '0.95';
+    </script>
+</body>
+
+</html>
